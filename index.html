@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora — Aulas Coletivas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0c;
+    --surface: #1c1c1a;
+    --surface2: #2a2a28;
+    --border: rgba(255,255,255,0.10);
+    --text: #f5efe0;
+    --text2: #ddd4c0;
+    --text3: #cdc0a0;
+    --accent: #5aa06e;
+    --gold: #d4b44e;
+    --accent-glow: rgba(90,160,110,0.15);
+    --serif: 'Cormorant Garamond', serif;
+    --sans: 'DM Sans', sans-serif;
+    --r: 8px;
+  }
+
+  html { height: 100%; }
+
+  body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 350;
+    padding: 24px 12px;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 50% 30%, rgba(90,160,110,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(90,160,110,0.05) 0%, transparent 60%);
+  }
+
+  .calc {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px 28px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+  }
+
+  .calc-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .calc-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 350;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .calc-title em { font-style: italic; color: var(--accent); }
+
+  .calc-badge {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .control-group + .control-group { padding-left: 12px; border-left: 1px solid var(--border); }
+
+  .control-group label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .control-group input {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--accent);
+    outline: none;
+    width: 64px;
+    padding: 2px 0;
+    text-align: center;
+  }
+  .control-group input:focus { border-bottom-color: var(--accent); box-shadow: 0 2px 12px var(--accent-glow); }
+
+  .hint {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    margin-left: 10px;
+    white-space: nowrap;
+    cursor: help;
+  }
+
+  .top-resumo {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 14px 22px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    align-items: center;
+  }
+  .top-resumo .tr-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text2);
+  }
+  .top-resumo .tr-item .tr-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .top-resumo .tr-item .tr-val {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .top-resumo .tr-item .tr-hrs {
+    font-size: 13px;
+    color: var(--text3);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid rgba(90,160,110,0.35);
+    padding: 9px 18px;
+    cursor: pointer;
+    border-radius: var(--r);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 20px var(--accent-glow); }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    table-layout: fixed;
+  }
+
+  thead tr { background: var(--surface2); }
+  th {
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+  }
+  th:nth-child(1) { width: 16%; }
+  th:nth-child(2) { width: 8%; text-align: center; }
+  th:nth-child(3) { width: 30%; text-align: center; }
+  th:nth-child(4) { width: 8%; text-align: center; }
+  th:nth-child(5) { width: 10%; text-align: center; }
+  th:nth-child(6) { width: 12%; text-align: right; }
+  th:nth-child(7) { width: 16%; text-align: right; }
+  th:nth-child(8) { width: 40px; text-align: center; }
+
+  td {
+    padding: 10px 8px;
+    font-size: 14px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5) { text-align: center; }
+  td:nth-child(6), td:nth-child(7) { text-align: right; }
+  td:nth-child(8) { text-align: center; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover td { background: rgba(90,160,110,0.06); }
+
+  td input[type=number] {
+    width: 100%;
+    max-width: 54px;
+    padding: 6px 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    text-align: center;
+    border-radius: 4px;
+    transition: border-color 0.15s;
+  }
+  td input[type=number]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  td input[type=text] {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    border-radius: 4px;
+    transition: border-color 0.15s;
+  }
+  td input[type=text]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  .btn-rm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--text3);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-rm:hover { color: var(--red); border-color: var(--red); background: rgba(201,76,76,0.1); }
+
+  .val-rec { font-family: var(--serif); font-size: 17px; font-weight: 400; color: var(--accent); }
+  .val-contrib { font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--gold); }
+
+  .day-tog {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .day-tog label {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    padding: 4px 7px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .day-tog input { display: none; }
+  .day-tog input:checked + label {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .sumario {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .sumario-item {
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+  }
+  .sumario-item .lbl {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 2px;
+  }
+  .sumario-item .val {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .sumario-item .val.green { color: var(--accent); }
+  .sumario-item .val.gold { color: var(--gold); }
+
+  .distrib {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 20px 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+  }
+
+  .distrib-card {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .distrib-card .name {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .distrib-card .line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text3);
+  }
+  .distrib-card .line .val { color: var(--text2); font-weight: 400; }
+  .distrib-card .total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 6px;
+  }
+  .distrib-card .total-line .val { font-family: var(--serif); font-size: 20px; color: var(--accent); }
+  .distrib-card.caixa .total-line .val { color: var(--gold); }
+
+  .sched {
+    margin-top: 16px;
+    padding: 18px 22px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+  }
+  .sched summary::-webkit-details-marker { display: none; }
+  .sched summary { outline: none; font-size: 12px; letter-spacing: 0.05em; }
+  .sched-title {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+  .sched-week { margin-bottom: 18px; }
+  .sched-week:last-child { margin-bottom: 0; }
+  .sched-week-label {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sched-week-label .badge {
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+  }
+  .sched-grid {
+    display: grid;
+    grid-template-columns: 70px repeat(5, 1fr);
+    gap: 4px;
+    font-size: 12px;
+  }
+  .sched-grid .cell {
+    padding: 6px 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-align: center;
+    color: var(--text2);
+  }
+  .sched-grid .cell.day { color: var(--text3); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; border: none; padding: 3px 4px; font-weight: 500; }
+  .sched-grid .cell.time { color: var(--text3); font-size: 10px; text-align: right; padding-right: 10px; background: transparent; border: none; }
+  .sched-grid .cell .loc-name { color: var(--text); font-size: 11px; line-height: 1.5; }
+  .sched-grid .cell .prof-tag {
+    display: inline-block;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text3);
+    line-height: 1.7;
+    margin-bottom: 18px;
+    margin-top: -8px;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    margin-top: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--r) var(--r);
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .footer-item { display: flex; flex-direction: column; gap: 2px; }
+  .footer-lbl {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .top-resumo .tr-item .tr-hrs {
+    font-size: 13px;
+    color: var(--text3);
+  }
+  .top-resumo .tr-item .tr-vh {
+    font-size: 12px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .footer-val.accent { color: var(--accent); }
+
+  @media (max-width: 760px) {
+    body { padding: 16px 12px; font-size: 18px; }
+    .calc { padding: 24px 16px 22px; border-radius: 12px; }
+    .calc-title { font-size: 28px; }
+    .calc-badge { font-size: 13px; padding: 6px 18px; }
+    .subtitle { font-size: 17px; line-height: 1.6; }
+    .controls { padding: 16px 18px; gap: 14px; }
+    .control-group input { font-size: 24px; width: 64px; }
+    .control-group + .control-group { padding-left: 14px; }
+    .control-group label { font-size: 14px; }
+    .hint { font-size: 13px; margin-left: 10px; }
+    .btn { font-size: 15px; padding: 10px 20px; }
+    .table-wrap { overflow: visible; }
+    table { display: none; }
+
+    .mobile-cards { display: flex; flex-direction: column; gap: 16px; }
+
+    .card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px;
+    }
+    .card-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-row + .card-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .card-label {
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      min-width: 64px;
+    }
+    .card input[type=text] {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: var(--sans);
+      font-size: 19px;
+      color: var(--text);
+      outline: none;
+      border-radius: 4px;
+    }
+    .card input[type=text]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .card input[type=number] {
+      width: 64px;
+      padding: 10px 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: var(--sans);
+      font-size: 19px;
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .card input[type=number]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .card-val { font-family: var(--serif); font-size: 22px; font-weight: 400; }
+    .card-val.green { color: var(--accent); }
+    .card-val.gold { color: var(--gold); }
+    .card-val.muted { color: var(--text2); }
+    .day-tog label { font-size: 14px; padding: 8px 12px; border-radius: 4px; }
+    .btn-rm { font-size: 16px; padding: 6px 12px; }
+
+    .top-resumo { flex-direction: column; gap: 12px; padding: 16px 20px; }
+    .top-resumo .tr-item { font-size: 19px; gap: 10px; }
+    .top-resumo .tr-item .tr-name { font-size: 22px; }
+    .top-resumo .tr-item .tr-hrs { font-size: 16px; }
+    .top-resumo .tr-item .tr-vh { font-size: 15px; }
+    .top-resumo .tr-item .tr-val { font-size: 21px; }
+
+    .distrib { grid-template-columns: 1fr; padding: 20px; gap: 14px; }
+    .distrib-card { padding: 16px; }
+    .distrib-card .name { font-size: 24px; }
+    .distrib-card .line { font-size: 18px; }
+    .distrib-card .total-line { font-size: 18px; }
+    .distrib-card .total-line .val { font-size: 23px; }
+
+    .sumario { grid-template-columns: 1fr; gap: 12px; }
+    .sumario-item { padding: 14px 18px; }
+    .sumario-item .lbl { font-size: 14px; }
+    .sumario-item .val { font-size: 24px; }
+
+    .sched { padding: 18px 16px; }
+    .sched summary { font-size: 16px; }
+    .sched-title { font-size: 14px; margin-bottom: 14px; }
+    .sched-week { margin-bottom: 20px; }
+    .sched-week-label { font-size: 16px; gap: 10px; }
+    .sched-week-label .badge { font-size: 12px; padding: 3px 12px; }
+    .sched-grid { grid-template-columns: 70px repeat(5, 1fr); gap: 5px; font-size: 13px; }
+    .sched-grid .cell { padding: 8px 6px; }
+    .sched-grid .cell.day { font-size: 12px; padding: 3px 4px; }
+    .sched-grid .cell.time { font-size: 12px; padding-right: 10px; }
+    .sched-grid .cell .loc-name { font-size: 13px; }
+    .sched-grid .cell .prof-tag { font-size: 11px; padding: 2px 8px; }
+
+    .footer { padding: 18px 20px; gap: 16px; }
+    .footer-lbl { font-size: 14px; }
+    .footer-val { font-size: 28px; }
+  }
+
+  @media (min-width: 761px) {
+    .mobile-cards { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="calc">
+
+  <div class="calc-header">
+    <h1 class="calc-title">Calculadora de <em>Receita</em></h1>
+    <span class="calc-badge">Aulas Coletivas</span>
+  </div>
+
+  <p class="subtitle" style="font-size:14px;margin-bottom:18px;margin-top:-8px">Mensalidade e total de alunos ajustáveis. Marque os dias de cada local. "Aulas/dia" controla quantas horas por dia — metade manhã, metade noite. 28% da receita vai ao local, o restante dividido entre os professores.</p>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Mensalidade (R$)</label>
+      <input type="number" id="base-price" value="70" min="1" onchange="calc()" oninput="calc()" />
+    </div>
+    <div class="control-group">
+      <label>Total alunos</label>
+      <input type="number" id="total-alunos-input" value="40" min="0" onchange="distribuir()" oninput="distribuir()" title="Começa a ficar interessante a partir de 80 alunos" />
+      <span class="hint" title="Começa a ficar interessante a partir de 80 alunos">💡 80+</span>
+    </div>
+    <button class="btn" onclick="addLocal()">+ Local</button>
+    <button class="btn" onclick="salvarHtml()">Salvar HTML</button>
+  </div>
+
+  <!-- Top summary: teacher results -->
+  <div class="top-resumo" id="top-resumo">
+    <span style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)">Professores</span>
+    <div class="tr-item"><span class="tr-name">Vágner</span> <span class="tr-hrs" id="top-v-hrs">0h</span> <span class="tr-vh" id="top-v-vh"></span> <span class="tr-val" id="top-v-rec">R$ 0</span></div>
+    <div class="tr-item"><span class="tr-name">Bruno</span> <span class="tr-hrs" id="top-b-hrs">0h</span> <span class="tr-vh" id="top-b-vh"></span> <span class="tr-val" id="top-b-rec">R$ 0</span></div>
+    <div class="tr-item"><span class="tr-name">Fernando</span> <span class="tr-hrs" id="top-f-hrs">0h</span> <span class="tr-vh" id="top-f-vh"></span> <span class="tr-val" id="top-f-rec">R$ 0</span></div>
+  </div>
+
+  <div class="table-wrap">
+  <table id="desktop-table">
+    <thead>
+      <tr>
+        <th>Local</th>
+        <th>Alunos</th>
+        <th>Dias</th>
+        <th>Aulas/dia</th>
+        <th>Horas/mês</th>
+        <th>Receita</th>
+        <th>Contrib. local (28%)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="locais-body"></tbody>
+  </table>
+  </div>
+
+  <div class="mobile-cards" id="mobile-cards"></div>
+
+  <div class="sumario" id="sumario">
+    <div class="sumario-item">
+      <div class="lbl">Total dias/mês</div>
+      <div class="val" id="s-dias">16d</div>
+    </div>
+    <div class="sumario-item">
+      <div class="lbl">Total horas/mês</div>
+      <div class="val" id="s-horas">0h</div>
+    </div>
+    <div class="sumario-item">
+      <div class="lbl">Receita bruta total</div>
+      <div class="val" id="s-bruta">R$ 0</div>
+    </div>
+    <div class="sumario-item">
+      <div class="lbl">Contrib. locais (28%)</div>
+      <div class="val gold" id="s-contrib">R$ 0</div>
+    </div>
+    <div class="sumario-item">
+      <div class="lbl">Receita líquida (72%)</div>
+      <div class="val green" id="s-liquida">R$ 0</div>
+    </div>
+  </div>
+
+  <div class="distrib" id="distrib">
+    <div class="distrib-card" id="card-vagner">
+      <div class="name">Vágner</div>
+      <div class="line"><span>Horas/mês</span><span class="val" id="v-horas">0h</span></div>
+      <div class="line"><span>Dias/mês</span><span class="val" id="v-dias">0</span></div>
+      <div class="line"><span>Valor-hora</span><span class="val" id="v-vh" style="color:var(--gold)">—</span></div>
+      <div class="line"><span>Repasse bruto (⅓)</span><span class="val" id="v-bruto">R$ 0</span></div>
+      <div class="line"><span>— Caixa da empresa (16%)</span><span class="val" id="v-caixa">-R$ 0</span></div>
+      <div class="total-line"><span>Receber</span><span class="val" id="v-final">R$ 0</span></div>
+    </div>
+    <div class="distrib-card" id="card-bruno">
+      <div class="name">Bruno</div>
+      <div class="line"><span>Horas/mês</span><span class="val" id="b-horas">0h</span></div>
+      <div class="line"><span>Dias/mês</span><span class="val" id="b-dias">0</span></div>
+      <div class="line"><span>Valor-hora</span><span class="val" id="b-vh" style="color:var(--gold)">—</span></div>
+      <div class="line"><span>Repasse bruto (⅓)</span><span class="val" id="b-bruto">R$ 0</span></div>
+      <div class="line"><span>— Caixa da empresa (16%)</span><span class="val" id="b-caixa">-R$ 0</span></div>
+      <div class="total-line"><span>Receber</span><span class="val" id="b-final">R$ 0</span></div>
+    </div>
+    <div class="distrib-card" id="card-fernando">
+      <div class="name">Fernando</div>
+      <div class="line"><span>Horas/mês</span><span class="val" id="f-horas">0h</span></div>
+      <div class="line"><span>Dias/mês</span><span class="val" id="f-dias">0</span></div>
+      <div class="line"><span>Valor-hora</span><span class="val" id="f-vh" style="color:var(--gold)">—</span></div>
+      <div class="line"><span>Repasse bruto (⅓)</span><span class="val" id="f-bruto">R$ 0</span></div>
+      <div class="line"><span>— Caixa da empresa (16%)</span><span class="val" id="f-caixa">-R$ 0</span></div>
+      <div class="total-line"><span>Receber</span><span class="val" id="f-final">R$ 0</span></div>
+    </div>
+    <div class="distrib-card caixa" id="card-caixa">
+      <div class="name" style="color:var(--gold)">Caixa da Empresa</div>
+      <div class="line"><span>Vágner</span><span class="val" id="cx-v">R$ 0</span></div>
+      <div class="line"><span>Bruno</span><span class="val" id="cx-b">R$ 0</span></div>
+      <div class="line"><span>Fernando</span><span class="val" id="cx-f">R$ 0</span></div>
+      <div class="total-line"><span>Total caixa</span><span class="val" id="cx-total">R$ 0</span></div>
+    </div>
+  </div>
+
+  <!-- Schedule (collapsible) -->
+  <details class="sched" id="sched" open>
+    <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);user-select:none">
+      <span style="font-size:12px">▾</span> Escala mensal — <span id="sched-summary" style="color:var(--accent);text-transform:none;letter-spacing:0">carregando…</span>
+    </summary>
+    <div style="margin-top:12px;overflow-x:auto">
+      <div id="sched-weeks"></div>
+    </div>
+  </details>
+
+</div>
+
+<script>
+const dayLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+const profNames = ['Vágner', 'Bruno', 'Fernando'];
+const profColors = ['#4a8c61', '#c9a84c', '#c94c4c'];
+
+var defaultLocais = /*__DATA__*/ [
+  ['Igreja Bela Vista', 10, [1,0,1,0,0], 1],
+  ['Igreja Vila Nova',  10, [1,0,1,0,0], 1],
+  ['Igreja Bom Jesus',  10, [0,1,0,1,0], 1],
+  ['Basílica São Geraldo', 10, [0,1,0,1,0], 1]
+];
+
+try {
+  var saved = localStorage.getItem('aulasColetivasState');
+  if (saved) {
+    var data = JSON.parse(saved);
+    if (Array.isArray(data) && data.length > 0) {
+      defaultLocais.length = 0;
+      data.forEach(function(item) { defaultLocais.push(item); });
+    }
+  }
+} catch(e) {}
+
+function renderAll() {
+  renderTable();
+  renderCards();
+  calc();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('locais-body');
+  tbody.innerHTML = '';
+  defaultLocais.forEach((l, i) => {
+    const tr = document.createElement('tr');
+    const days = l[2];
+    let dayHtml = '<div class="day-tog">';
+    dayLabels.forEach((dl, di) => {
+      const checked = days[di] ? ' checked' : '';
+      dayHtml += '<input type="checkbox" id="d' + i + '-' + di + '"' + checked + ' onchange="toggleDay(' + i + ',' + di + ')" />' +
+        '<label for="d' + i + '-' + di + '">' + dl + '</label>';
+    });
+    dayHtml += '</div>';
+    tr.innerHTML =
+      '<td><input type="text" value="' + l[0] + '" onchange="updName(' + i + ',this.value)" /></td>' +
+      '<td><input type="number" value="' + l[1] + '" min="0" onchange="updAlunos(' + i + ',this.value)" oninput="updAlunos(' + i + ',this.value)" /></td>' +
+      '<td>' + dayHtml + '</td>' +
+      '<td><input type="number" value="' + l[3] + '" min="0" onchange="updAulas(' + i + ',this.value)" oninput="updAulas(' + i + ',this.value)" /></td>' +
+      '<td class="val-hrs" id="hrs-' + i + '">0h</td>' +
+      '<td class="val-rec" id="rec-' + i + '">R$ 0</td>' +
+      '<td class="val-contrib" id="ctb-' + i + '">R$ 0</td>' +
+      '<td><button class="btn-rm" onclick="rmLocal(' + i + ')" title="Remover local">✕</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCards() {
+  const container = document.getElementById('mobile-cards');
+  container.innerHTML = '';
+  defaultLocais.forEach((l, i) => {
+    const days = l[2];
+    let dayHtml = '<div class="day-tog">';
+    dayLabels.forEach((dl, di) => {
+      const checked = days[di] ? ' checked' : '';
+      dayHtml += '<input type="checkbox" id="md' + i + '-' + di + '"' + checked + ' onchange="toggleDay(' + i + ',' + di + ')" />' +
+        '<label for="md' + i + '-' + di + '">' + dl + '</label>';
+    });
+    dayHtml += '</div>';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="card-row">' +
+        '<span class="card-label">Local</span>' +
+        '<input type="text" value="' + l[0] + '" onchange="updName(' + i + ',this.value)" />' +
+        '<button class="btn-rm" onclick="rmLocal(' + i + ')" title="Remover" style="flex-shrink:0">✕</button>' +
+      '</div>' +
+      '<div class="card-row">' +
+        '<span class="card-label">Alunos</span><input type="number" value="' + l[1] + '" min="0" onchange="updAlunos(' + i + ',this.value)" oninput="updAlunos(' + i + ',this.value)" />' +
+        '<span class="card-label" style="margin-left:auto">Aulas/dia</span><input type="number" value="' + l[3] + '" min="0" onchange="updAulas(' + i + ',this.value)" oninput="updAulas(' + i + ',this.value)" />' +
+      '</div>' +
+      '<div class="card-row"><span class="card-label">Dias</span>' + dayHtml + '</div>' +
+      '<div class="card-row">' +
+        '<span class="card-label">Horas/mês</span><span class="card-val muted" id="chrs-' + i + '">0h</span>' +
+        '<span class="card-label" style="margin-left:auto">Receita</span><span class="card-val green" id="crec-' + i + '">R$ 0</span>' +
+        '<span class="card-label">Contrib.(28%)</span><span class="card-val gold" id="cctb-' + i + '">R$ 0</span>' +
+      '</div>';
+    container.appendChild(card);
+  });
+}
+
+function toggleDay(i, di) {
+  defaultLocais[i][2][di] = defaultLocais[i][2][di] ? 0 : 1;
+  syncDays(i);
+  calc();
+}
+
+function updName(i, v) { defaultLocais[i][0] = v; calc(); }
+function updAlunos(i, v) {
+  defaultLocais[i][1] = parseInt(v) || 0;
+  defaultLocais[i][3] = Math.max(1, Math.ceil(defaultLocais[i][1] / 20));
+  syncAulas(i);
+  calc();
+}
+function updAulas(i, v) { defaultLocais[i][3] = parseInt(v) || 0; calc(); }
+
+function syncDays(i) {
+  const days = defaultLocais[i][2];
+  dayLabels.forEach((_, di) => {
+    const c1 = document.getElementById('d' + i + '-' + di);
+    const c2 = document.getElementById('md' + i + '-' + di);
+    if (c1) c1.checked = days[di];
+    if (c2) c2.checked = days[di];
+  });
+}
+
+function buildSchedule() {
+  // Collect all unique time slot labels across all locations (based on aulas/dia)
+  const allTimeLabels = [];
+  defaultLocais.forEach(l => {
+    const aulas = l[3];
+    const mCnt = Math.ceil(aulas / 2);
+    const nCnt = Math.floor(aulas / 2);
+    for (let m = 0; m < mCnt; m++) {
+      const lbl = 'Manhã ' + (6 + m) + 'h';
+      if (!allTimeLabels.includes(lbl)) allTimeLabels.push(lbl);
+    }
+    for (let n = 0; n < nCnt; n++) {
+      const lbl = 'Noite ' + (18 + n) + 'h';
+      if (!allTimeLabels.includes(lbl)) allTimeLabels.push(lbl);
+    }
+  });
+  allTimeLabels.sort();
+
+  function getTimeLabel(aulas, slotType, slotIdx) {
+    const mCnt = Math.ceil(aulas / 2);
+    if (slotType === 'm') return 'Manhã ' + (6 + slotIdx) + 'h';
+    return 'Noite ' + (18 + slotIdx) + 'h';
+  }
+
+  const weeks = [];
+  const profHoursMonth = [0, 0, 0];
+  const profDaysMonth = [new Set(), new Set(), new Set()];
+
+  for (let w = 0; w < 4; w++) {
+    const grid = {};
+    allTimeLabels.forEach(lbl => { grid[lbl] = [[], [], [], [], []]; });
+    const weekSessions = [];
+
+    defaultLocais.forEach((l, i) => {
+      const days = l[2];
+      const aulas = l[3];
+      const mCnt = Math.ceil(aulas / 2);
+      const nCnt = Math.floor(aulas / 2);
+
+      days.forEach((active, di) => {
+        if (!active) return;
+        for (let m = 0; m < mCnt; m++) {
+          const lbl = getTimeLabel(aulas, 'm', m);
+          const session = { dayIdx: di, timeLbl: lbl, loc: l[0], hr: 6 + m, locIdx: i };
+          weekSessions.push(session);
+          if (grid[lbl]) grid[lbl][di].push(session);
+        }
+        for (let n = 0; n < nCnt; n++) {
+          const lbl = getTimeLabel(aulas, 'n', n);
+          const session = { dayIdx: di, timeLbl: lbl, loc: l[0], hr: 18 + n, locIdx: i };
+          weekSessions.push(session);
+          if (grid[lbl]) grid[lbl][di].push(session);
+        }
+      });
+    });
+
+    weekSessions.sort((a, b) => a.dayIdx - b.dayIdx || a.timeLbl.localeCompare(b.timeLbl) || a.locIdx - b.locIdx);
+    weekSessions.forEach((s, idx) => {
+      s.profIdx = (idx + w) % 3;
+      profHoursMonth[s.profIdx]++;
+      profDaysMonth[s.profIdx].add(s.dayIdx);
+    });
+
+    weeks.push({ grid, sessions: weekSessions });
+  }
+
+  const profDaysMonthTotal = profDaysMonth.map(set => set.size * 4);
+  return { weeks, profHoursMonth, profDaysMonth: profDaysMonthTotal, timeLabels: allTimeLabels };
+}
+
+function renderSchedule(sched) {
+  const container = document.getElementById('sched-weeks');
+  const weekLabels = ['1ª Semana', '2ª Semana', '3ª Semana', '4ª Semana'];
+  let html = '';
+
+  sched.weeks.forEach((week, wi) => {
+    html += '<div class="sched-week">' +
+      '<div class="sched-week-label">' + weekLabels[wi] + ' <span class="badge">' + week.sessions.length + ' aulas</span></div>' +
+      '<div class="sched-grid" style="grid-template-columns:70px repeat(5,1fr)">';
+
+    // Header
+    html += '<div class="cell time"></div>';
+    dayLabels.forEach(dl => {
+      html += '<div class="cell day">' + dl + '</div>';
+    });
+
+    // Rows: one per time label
+    sched.timeLabels.forEach(lbl => {
+      html += '<div class="cell time">' + lbl + '</div>';
+      const cells = week.grid[lbl] || [[], [], [], [], []];
+      cells.forEach(cellSessions => {
+        if (cellSessions.length === 0) {
+          html += '<div class="cell" style="color:var(--text3);font-size:7px">—</div>';
+        } else {
+          let cellHtml = '';
+          cellSessions.forEach(c => {
+            const profName = profNames[c.profIdx];
+            const profColor = profColors[c.profIdx];
+            cellHtml += '<div class="loc-name">' + c.loc +
+              ' <span class="prof-tag" style="background:' + profColor + '22;color:' + profColor + '">' + profName + '</span></div>';
+          });
+          html += '<div class="cell">' + cellHtml + '</div>';
+        }
+      });
+    });
+
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+
+  const totalSessions = sched.weeks.reduce((s, w) => s + w.sessions.length, 0);
+  const summary = document.getElementById('sched-summary');
+  if (summary) {
+    summary.textContent = totalSessions + ' aulas · ' +
+      profNames.map((n, i) => n + ' ' + sched.profHoursMonth[i] + 'h/' + sched.profDaysMonth[i] + 'd').join(' · ');
+  }
+}
+
+function calc() {
+  const base = parseFloat(document.getElementById('base-price').value) || 40;
+  let receitaBruta = 0, totalContrib = 0, totalHoras = 0;
+
+  defaultLocais.forEach((l, i) => {
+    const q = l[1], days = l[2], s = l[3];
+    const d = days.reduce((a, b) => a + b, 0);
+    const h = d * s * 4;
+    const rec = base * q;
+    const contrib = rec * 0.28;
+    receitaBruta += rec;
+    totalContrib += contrib;
+    totalHoras += h;
+
+    setText('hrs-' + i, h + 'h');
+    setText('rec-' + i, 'R$ ' + rec.toLocaleString('pt-BR'));
+    setText('ctb-' + i, 'R$ ' + contrib.toLocaleString('pt-BR'));
+    setText('chrs-' + i, h + 'h');
+    setText('crec-' + i, 'R$ ' + rec.toLocaleString('pt-BR'));
+    setText('cctb-' + i, 'R$ ' + contrib.toLocaleString('pt-BR'));
+  });
+
+  const receitaLiquida = receitaBruta - totalContrib;
+  const parteProf = receitaLiquida / 3;
+
+  setText('s-dias', '16d');
+  setText('s-horas', totalHoras + 'h');
+  setText('s-bruta', 'R$ ' + receitaBruta.toLocaleString('pt-BR'));
+  setText('s-contrib', 'R$ ' + totalContrib.toLocaleString('pt-BR'));
+  setText('s-liquida', 'R$ ' + receitaLiquida.toLocaleString('pt-BR'));
+
+  document.getElementById('total-alunos-input').value = defaultLocais.reduce((s, l) => s + l[1], 0);
+
+  // Build schedule
+  const sched = buildSchedule();
+
+  const profKeys = ['v', 'b', 'f'];
+  let totalCaixa = 0;
+  profKeys.forEach((id, idx) => {
+    const descCaixa = parteProf * 0.16;
+    const final = parteProf - descCaixa;
+    const hrs = sched.profHoursMonth[idx];
+    const vh = hrs > 0 ? final / hrs : 0;
+    totalCaixa += descCaixa;
+    setText(id + '-horas', hrs + 'h');
+    setText(id + '-dias', sched.profDaysMonth[idx] + 'd');
+    setText(id + '-bruto', 'R$ ' + parteProf.toLocaleString('pt-BR'));
+    setText(id + '-caixa', '-R$ ' + descCaixa.toLocaleString('pt-BR'));
+    setText(id + '-final', 'R$ ' + final.toLocaleString('pt-BR'));
+    setText(id + '-vh', 'R$ ' + vh.toFixed(2) + '/h');
+    setText('top-' + id + '-hrs', hrs + 'h');
+    setText('top-' + id + '-vh', 'R$ ' + vh.toFixed(2) + '/h');
+    setText('top-' + id + '-rec', 'R$ ' + final.toLocaleString('pt-BR'));
+  });
+
+  setText('cx-v', 'R$ ' + (parteProf * 0.16).toLocaleString('pt-BR'));
+  setText('cx-b', 'R$ ' + (parteProf * 0.16).toLocaleString('pt-BR'));
+  setText('cx-f', 'R$ ' + (parteProf * 0.16).toLocaleString('pt-BR'));
+  setText('cx-total', 'R$ ' + totalCaixa.toLocaleString('pt-BR'));
+
+  renderSchedule(sched);
+  saveState();
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function distribuir() {
+  const total = parseInt(document.getElementById('total-alunos-input').value) || 0;
+  if (!defaultLocais.length) return;
+  const base = Math.floor(total / defaultLocais.length);
+  const resto = total % defaultLocais.length;
+  defaultLocais.forEach((l, i) => {
+    l[1] = base + (i < resto ? 1 : 0);
+    l[3] = Math.max(1, Math.ceil(l[1] / 20));
+  });
+  syncAlunos();
+  defaultLocais.forEach((_, i) => syncAulas(i));
+  calc();
+}
+
+function syncAulas(i) {
+  const val = defaultLocais[i][3];
+  const rows = document.querySelectorAll('#locais-body tr');
+  const inputs = rows[i] ? rows[i].querySelectorAll('input[type="number"]') : [];
+  if (inputs[1]) inputs[1].value = val;
+  const cards = document.querySelectorAll('#mobile-cards .card');
+  const ci = cards[i] ? cards[i].querySelectorAll('input[type="number"]') : [];
+  if (ci[1]) ci[1].value = val;
+}
+
+function syncAlunos() {
+  defaultLocais.forEach((l, i) => {
+    const rows = document.querySelectorAll('#locais-body tr');
+    const inputs = rows[i] ? rows[i].querySelectorAll('input[type="number"]') : [];
+    if (inputs[0]) inputs[0].value = l[1];
+    const cards = document.querySelectorAll('#mobile-cards .card');
+    const ci = cards[i] ? cards[i].querySelectorAll('input[type="number"]') : [];
+    if (ci[0]) ci[0].value = l[1];
+  });
+}
+
+function rmLocal(i) {
+  defaultLocais.splice(i, 1);
+  renderAll();
+}
+
+function addLocal() {
+  defaultLocais.push(['Novo local', 0, [1,0,0,0,0], 1]);
+  renderAll();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('aulasColetivasState', JSON.stringify(defaultLocais));
+  } catch(e) {}
+}
+
+function salvarHtml() {
+  var dataStr = JSON.stringify(defaultLocais);
+  var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  var newHtml = html.replace(/\/\*__DATA__\*\/[\s\S]*?\];/, '/*__DATA__*/ ' + dataStr + ';');
+  var blob = new Blob([newHtml], {type:'text/html;charset=utf-8'});
+  downloadBlob(blob, 'Calculadora de Receita - Aulas Coletivas.html');
+}
+
+function downloadBlob(blob, filename) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+renderAll();
+</script>
+</body>
+</html>
