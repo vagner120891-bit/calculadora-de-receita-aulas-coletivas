@@ -1,1 +1,0 @@
-# calculadora-de-receita-aulas-coletivas
